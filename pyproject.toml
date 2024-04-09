@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "hexlet-code"
+version = "0.1.0"
+description = "Compares two configuration files and shows a difference"
+authors = ["MaxKtv <maximkutiaev@outlook.com>"]
+readme = "README.md"
+packages = [
+  { include = "gendiff" },
+]
+
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[tool.poetry.scripts]
+hexlet-python-package = "gendiff.scripts.gendiff:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
