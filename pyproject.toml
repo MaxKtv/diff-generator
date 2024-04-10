@@ -13,7 +13,7 @@ packages = [
 python = "^3.10"
 
 [tool.poetry.scripts]
-hexlet-python-package = "gendiff.scripts.gendiff:main"
+hexlet-python-package = "gendiff.scripts.gendiff_script:main"
 
 [build-system]
 requires = ["poetry-core"]

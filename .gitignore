@@ -17,3 +17,7 @@ venv.bak/
 #dev-files
 files/
 /files/
+dist/
+/dist/
+/file2.json
+/file1.json
