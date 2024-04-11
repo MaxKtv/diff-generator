@@ -8,12 +8,16 @@ packages = [
   { include = "gendiff" },
 ]
 
-
 [tool.poetry.dependencies]
 python = "^3.10"
 
 [tool.poetry.scripts]
 hexlet-python-package = "gendiff.scripts.gendiff_script:main"
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^7.0.0"
+pytest = "^8.1.1"
+pytest-cov = "^5.0.0"
 
 [build-system]
 requires = ["poetry-core"]
