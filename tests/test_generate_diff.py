@@ -9,9 +9,20 @@ def get_path(file_name):
     return current_dir / 'fixtures' / file_name
 
 
-def test_generate_diff():
-    file1 = get_path('file1.json')
-    file2 = get_path('file2.json')
+def test_generate_stylish_diff():
+    file1_j, file1_y = get_path('file1.json'), get_path('file1.yml')
+    file2_j, file2_y = get_path('file2.json'), get_path('file2.yaml')
     expected = get_path('expected.txt')
     with open(expected, 'r') as e:
-        assert generate_diff.generate_diff(file1, file2) == e.read()
+        assert generate_diff.generate_diff(file1_j, file2_j) == e.read()
+    with open(expected, 'r') as e:
+        assert generate_diff.generate_diff(file1_y, file2_y) == e.read()
+
+def test_generate_plain_diff():
+    file1_j, file1_y = get_path('file1.json'), get_path('file1.yml')
+    file2_j, file2_y = get_path('file2.json'), get_path('file2.yaml')
+    expected = get_path('expected_plain.txt')
+    with open(expected, 'r') as e:
+        assert generate_diff.generate_diff(file1_j, file2_j, 'plain') == e.read()
+    with open(expected, 'r') as e:
+        assert generate_diff.generate_diff(file1_y, file2_y, 'plain') == e.read()
