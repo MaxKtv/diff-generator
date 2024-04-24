@@ -1,19 +1,22 @@
 from json import load
 from yaml import safe_load
 from pathlib import Path
+from typing import Dict, Any
 
-FORMATTER = {'json': load, 'yaml': safe_load, 'yml': safe_load}
+EXTENSION = {'.json': load, '.yaml': safe_load, '.yml': safe_load}
 
 
-def get_data(file1: Path, file2: Path) -> tuple:
-    with (open(file1, 'r') as f1,
-          open(file2, 'r') as f2):
-        ext1 = f1.name.split('.')[-1]
-        ext2 = f2.name.split('.')[-1]
-        if ext1 and ext2 in FORMATTER:
-            data1 = FORMATTER[ext1](f1)
-            data2 = FORMATTER[ext2](f2)
-            return data1, data2
+def get_file_extension(file) -> str:
+    file = Path(file)
+    return file.suffix
+
+
+def get_data(file: Path) -> Dict[str, Any]:
+    with open(file) as open_file:
+        ext = get_file_extension(file)
+        if ext in EXTENSION:
+            data = EXTENSION[ext](open_file)
+            return data
         else:
             raise ValueError('Oh no, something went wrong'
                              '\nSupported extensions are:'
