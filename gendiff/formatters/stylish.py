@@ -1,19 +1,6 @@
 from typing import Dict, Any
 
 
-def format_stylish_diff(diff: Dict[str, Any], data1: Dict[str, Any],
-                        data2: Dict[str, Any]) -> Dict[str, Any]:
-    formatter_dict = {}
-    for key in sorted(diff):
-        if isinstance(diff[key], dict):
-            nested_diff = format_stylish_diff(diff[key], data1[key], data2[key])
-            if nested_diff:
-                formatter_dict[key] = nested_diff
-        else:
-            make_stylish_diff(diff, key, data1, data2, formatter_dict)
-    return formatter_dict
-
-
 def make_stylish_diff(diff: Dict[str, Any], key: str,
                       data1: Dict[str, Any], data2: Dict[str, Any],
                       dictionary: Dict[str, Any]) -> Dict[str, Any]:
@@ -36,11 +23,11 @@ def decoder(obj: Any) -> str:
     elif obj is None:
         return 'null'
     else:
-        raise TypeError(f'Type {type(obj)} not supported')
+        return obj
 
 
-def stylize(obj: Dict[str, Any],
-            replacer: str = ' ', spaces_count: int = 2) -> str:
+def get_stylish_diff(formatted_diff: Dict[str, Any],
+                     replacer: str = ' ', spaces_count: int = 2) -> str:
 
     def stringify_value(value: Any, indent: str) -> str:
         if not isinstance(value, dict):
@@ -61,4 +48,5 @@ def stylize(obj: Dict[str, Any],
             if lines:
                 return ('{\n' + '\n'.join(lines) + '\n'
                         + indent[:-spaces_count * len(replacer)] + '}')
-    return stringify_value(obj, replacer * spaces_count)
+
+    return stringify_value(formatted_diff, replacer * spaces_count)
