@@ -3,23 +3,23 @@ from json import dumps
 from gendiff.formatters.stylish import decoder
 
 
-def make_json_diff(diff: Dict[str, Any], key: str,
+def make_json_diff(diff: Dict[str, Any],
                    data1: Dict[str, Any], data2: Dict[str, Any],
                    json_diff) -> Dict[str, Any]:
-    diff_value = diff[key]
-    if diff_value == 'original':
-        json_diff[key] = f'{decoder(data1[key])}: {diff_value}'
-    elif diff_value == 'changed':
-        if key not in data1:
-            diff_value = 'added'
-            json_diff[key] = f'{decoder(data2[key])}: {diff_value}'
-        elif key not in data2:
-            diff_value = 'removed'
-            json_diff[key] = f'{decoder(data1[key])}: {diff_value}'
-        else:
-            diff_value = 'updated'
-            json_diff[key] = (f'{decoder(data1[key])}: '
-                              f'{diff_value} -> {decoder(data2[key])}')
+    for key, value in diff.items():
+        if value == 'original':
+            json_diff[key] = f'{decoder(data1[key])}: {value}'
+        elif value == 'changed':
+            if key not in data1:
+                value = 'added'
+                json_diff[key] = f'{decoder(data2[key])}: {value}'
+            elif key not in data2:
+                value = 'removed'
+                json_diff[key] = f'{decoder(data1[key])}: {value}'
+            else:
+                value = 'updated'
+                json_diff[key] = (f'{decoder(data1[key])}: '
+                                  f'{value} -> {decoder(data2[key])}')
     return json_diff
 
 

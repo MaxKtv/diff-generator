@@ -51,7 +51,7 @@ def format_diff(func, diff: Dict[str, Any],
             if nested_diff:
                 variable[key] = nested_diff
         else:
-            func(diff, key, data1, data2, variable)
+            func(diff, data1, data2, variable)
     return variable
 
 
