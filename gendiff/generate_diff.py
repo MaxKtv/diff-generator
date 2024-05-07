@@ -17,7 +17,7 @@ DIFF_STYLE = {
 }
 
 
-def get_meta(data1: Dict[str, Any], data2: Dict[str, Any]) -> str:
+def get_meta(data1: Any, data2: Any, key) -> str:
     if isinstance(data1, dict) and isinstance(data2, dict):
         return 'nested'
     elif data1 == data2:
@@ -26,32 +26,40 @@ def get_meta(data1: Dict[str, Any], data2: Dict[str, Any]) -> str:
         return 'changed'
 
 
-def get_diff(data1: Dict[str, Any], data2: Dict[str, Any]) -> Dict[str, Any]:
+def get_metachanges(data1: Any, data2: Any, key):
+    if key not in data1:
+        return 'added'
+    elif key not in data2:
+        return 'removed'
+    else:
+        return 'updated'
+
+
+def get_diff(data1: Dict[str, Any], data2: Dict[str, Any]) -> Dict[str, tuple]:
     diff = {}
     for key in sorted(set(data1) | set(data2)):
         val1, val2 = data1.get(key), data2.get(key)
-        if get_meta(val1, val2) == 'nested':
+        if get_meta(val1, val2, key) == 'nested':
             nested_diff = get_diff(val1, val2)
             if nested_diff:
-                diff[key] = nested_diff
-        elif get_meta(val1, val2) == 'original':
-            diff[key] = 'original'
-        elif get_meta(val1, val2) == 'changed':
-            diff[key] = 'changed'
+                diff[key] = 'nested', nested_diff
+        elif get_meta(val1, val2, key) == 'original':
+            diff[key] = 'original', val1
+        elif get_meta(val1, val2, key) == 'changed':
+            diff[key] = get_metachanges(data1, data2, key), (val1, val2)
     return diff
 
 
-def format_diff(func, diff: Dict[str, Any],
-                data1: Dict[str, Any],
-                data2: Dict[str, Any]) -> Dict[str, Any] or str:
+def format_diff(style: str, diff: Dict[str, Any],
+                path: str = '') -> Dict[str, Any] or str:
     variable = {}
-    for key in sorted(diff):
-        if isinstance(diff[key], dict):
-            nested_diff = format_diff(func, diff[key], data1[key], data2[key])
+    for key, (meta, value) in diff.items():
+        if meta == 'nested':
+            nested_diff = format_diff(style, value, path + key + '.')
             if nested_diff:
                 variable[key] = nested_diff
         else:
-            func(diff, data1, data2, variable)
+            FORMATTERS[style](diff, variable, path)
     return variable
 
 
@@ -62,5 +70,6 @@ def generate_diff(path_file1: Path, path_file2: Path,
     data1 = get_data(path_file1)
     data2 = get_data(path_file2)
     diff = get_diff(data1, data2)
-    formatted_diff = format_diff(FORMATTERS[style], diff, data1, data2)
-    return DIFF_STYLE[style](formatted_diff)
+    formatted_diff = format_diff(style, diff)
+    result = DIFF_STYLE[style](formatted_diff)
+    return result

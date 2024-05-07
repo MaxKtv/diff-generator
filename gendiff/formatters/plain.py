@@ -2,24 +2,25 @@ from typing import Dict, Any
 
 
 def make_plain_diff(diff: Dict[str, Any],
-                    data1: Dict[str, Any], data2: Dict[str, Any],
-                    variable: Dict[str, Any]) -> Dict[str, Any]:
-    for key, value in diff.items():
-        if value == 'changed':
-            if key not in data2:
-                variable[key] = (f"Property '{format_path(key, data1)}' "
-                                 f"was removed")
-            elif key not in data1:
-                variable[key] = (
-                    f"Property '{format_path(key, data2)}' was added "
-                    f"with value: {format_value(data2[key])}"
-                )
-            else:
-                variable[key] = (
-                    f"Property '{format_path(key, data2)}' was updated. "
-                    f"From {format_value(data1[key])} "
-                    f"to {format_value(data2[key])}"
-                )
+                    variable: Dict[str, Any], path: str) -> Dict[str, Any]:
+
+    for key, (meta, value) in diff.items():
+
+        if meta == 'added':
+            variable[key] = (
+                f"Property '{path}{key}' was added "
+                f"with value: {format_value(value[1])}"
+            )
+        elif meta == 'removed':
+            variable[key] = (f"Property '{path}{key}' "
+                             f"was removed")
+        elif meta == 'updated':
+
+            variable[key] = (
+                f"Property '{path}{key}' was updated. "
+                f"From {format_value(value[0])} "
+                f"to {format_value(value[1])}"
+            )
 
     return variable
 
@@ -43,10 +44,11 @@ def format_path(endpoint: str, data: Dict[str, Any],
             nested_path = format_path(endpoint, value, path + [key])
             if nested_path:
                 return nested_path
+
     return None
 
 
-def get_plain_diff(formatted_diff) -> str:
+def get_plain_diff(formatted_diff: Dict[str, Any]) -> str:
 
     def extract_values(dictionary: Dict[str, Any]) -> Dict[str, Any]:
         for value in dictionary.values():

@@ -1,21 +1,19 @@
 from typing import Dict, Any
 
 
-def make_stylish_diff(diff: Dict[str, Any],
-                      data1: Dict[str, Any], data2: Dict[str, Any],
-                      dictionary: Dict[str, Any]) -> Dict[str, Any]:
-    for key, value in diff.items():
-        if value == 'original':
-            dictionary[f'  {key}'] = data1[key]
-        elif value == 'changed':
-            if key not in data2:
-                dictionary[f'- {key}'] = data1[key]
-            elif key not in data1:
-                dictionary[f'+ {key}'] = data2[key]
-            else:
-                dictionary[f'- {key}'] = data1[key]
-                dictionary[f'+ {key}'] = data2[key]
-    return dictionary
+def make_stylish_diff(diff: Dict[str, Any], variable: Dict[str, Any],
+                      _) -> Dict[str, Any]:
+    for key, [meta, value] in diff.items():
+        if meta == 'original':
+            variable[f'  {key}'] = value
+        elif meta == 'removed':
+            variable[f'- {key}'] = value[0]
+        elif meta == 'added':
+            variable[f'+ {key}'] = value[1]
+        elif meta == 'updated':
+            variable[f'- {key}'] = value[0]
+            variable[f'+ {key}'] = value[1]
+    return variable
 
 
 def decoder(obj: Any) -> str:
