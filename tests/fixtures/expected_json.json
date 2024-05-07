@@ -1,0 +1,24 @@
+{
+    "common": {
+        "follow": "false: added",
+        "setting1": "'Value 1': original",
+        "setting2": "200: removed",
+        "setting3": "true: updated -> null",
+        "setting4": "'blah blah': added",
+        "setting5": "[complex value]: added",
+        "setting6": {
+            "doge": {
+                "wow": "'': updated -> 'so much'"
+            },
+            "key": "'value': original",
+            "ops": "'vops': added"
+        }
+    },
+    "group1": {
+        "baz": "'bas': updated -> 'bars'",
+        "foo": "'bar': original",
+        "nest": "[complex value]: updated -> 'str'"
+    },
+    "group2": "[complex value]: removed",
+    "group3": "[complex value]: added"
+}
