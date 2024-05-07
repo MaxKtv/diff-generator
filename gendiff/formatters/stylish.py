@@ -1,19 +1,21 @@
-from typing import Dict, Any
+from typing import Dict, Any, Tuple
 
 
-def make_stylish_diff(diff: Dict[str, Any], variable: Dict[str, Any],
-                      _) -> Dict[str, Any]:
+def make_stylish_diff(diff: Dict[str, Tuple[str, Any]],
+                      formatter_dict: Dict[str, Any], _) -> Dict[str, Any]:
+
     for key, [meta, value] in diff.items():
         if meta == 'original':
-            variable[f'  {key}'] = value
+            formatter_dict[f'  {key}'] = value
         elif meta == 'removed':
-            variable[f'- {key}'] = value[0]
+            formatter_dict[f'- {key}'] = value[0]
         elif meta == 'added':
-            variable[f'+ {key}'] = value[1]
+            formatter_dict[f'+ {key}'] = value[1]
         elif meta == 'updated':
-            variable[f'- {key}'] = value[0]
-            variable[f'+ {key}'] = value[1]
-    return variable
+            formatter_dict[f'- {key}'] = value[0]
+            formatter_dict[f'+ {key}'] = value[1]
+
+    return formatter_dict
 
 
 def decoder(obj: Any) -> str:
@@ -25,7 +27,7 @@ def decoder(obj: Any) -> str:
         return obj
 
 
-def get_stylish_diff(formatted_diff: Dict[str, Any],
+def get_stylish_diff(formatter_dict: Dict[str, Any],
                      replacer: str = ' ', spaces_count: int = 2) -> str:
 
     def stringify_value(value: Any, indent: str) -> str:
@@ -41,11 +43,11 @@ def get_stylish_diff(formatted_diff: Dict[str, Any],
                 lines.append(
                     f'{indent}'
                     f'{key if not key[0].isalpha() else f"  {key}"}:'
-                    f'{" " if len(str(format_value)) >= 1 else ""}'
+                    f'{" " if len(str(format_value)) >= len(replacer) else ""}'
                     f'{format_value}'
                 )
             if lines:
                 return ('{\n' + '\n'.join(lines) + '\n'
                         + indent[:-spaces_count * len(replacer)] + '}')
 
-    return stringify_value(formatted_diff, replacer * spaces_count)
+    return stringify_value(formatter_dict, replacer * spaces_count)

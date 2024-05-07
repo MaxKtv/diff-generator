@@ -1,28 +1,26 @@
-from typing import Dict, Any
+from typing import Dict, Any, Tuple
 
 
-def make_plain_diff(diff: Dict[str, Any],
-                    variable: Dict[str, Any], path: str) -> Dict[str, Any]:
+def make_plain_diff(diff: Dict[str, Tuple[str, Any]],
+                    formatter_dict: Dict[str, Any],
+                    path: str) -> Dict[str, Any]:
 
     for key, (meta, value) in diff.items():
 
         if meta == 'added':
-            variable[key] = (
-                f"Property '{path}{key}' was added "
-                f"with value: {format_value(value[1])}"
-            )
+            formatter_dict[key] = (f"Property '{path}{key}' "
+                                   f"was added with value: "
+                                   f"{format_value(value[1])}")
         elif meta == 'removed':
-            variable[key] = (f"Property '{path}{key}' "
-                             f"was removed")
+            formatter_dict[key] = (f"Property '{path}{key}' "
+                                   f"was removed")
         elif meta == 'updated':
+            formatter_dict[key] = (f"Property '{path}{key}' "
+                                   f"was updated. From "
+                                   f"{format_value(value[0])} "
+                                   f"to {format_value(value[1])}")
 
-            variable[key] = (
-                f"Property '{path}{key}' was updated. "
-                f"From {format_value(value[0])} "
-                f"to {format_value(value[1])}"
-            )
-
-    return variable
+    return formatter_dict
 
 
 def format_value(value: Any) -> str:
@@ -33,19 +31,6 @@ def format_value(value: Any) -> str:
     elif isinstance(value, bool):
         return str(value).lower()
     return f"'{value}'" if isinstance(value, str) else str(value)
-
-
-def format_path(endpoint: str, data: Dict[str, Any],
-                path: list = []) -> str or None:
-    if endpoint in data:
-        return '.'.join(path + [endpoint])
-    for key, value in data.items():
-        if isinstance(value, dict):
-            nested_path = format_path(endpoint, value, path + [key])
-            if nested_path:
-                return nested_path
-
-    return None
 
 
 def get_plain_diff(formatted_diff: Dict[str, Any]) -> str:

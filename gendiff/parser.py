@@ -3,7 +3,11 @@ from yaml import safe_load
 from pathlib import Path
 from typing import Dict, Any
 
-EXTENSIONS = {'.json': load, '.yaml': safe_load, '.yml': safe_load}
+EXTENSIONS = {
+    '.json': load,
+    '.yaml': safe_load,
+    '.yml': safe_load
+}
 
 
 def get_file_extension(file: Path) -> str:

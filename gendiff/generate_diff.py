@@ -1,7 +1,7 @@
 from gendiff.parser import get_data
 from gendiff.formatters import stylish, plain, json
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, Tuple
 
 
 FORMATTERS = {
@@ -17,7 +17,7 @@ DIFF_STYLE = {
 }
 
 
-def get_meta(data1: Any, data2: Any, key) -> str:
+def get_meta(data1: Any, data2: Any) -> str:
     if isinstance(data1, dict) and isinstance(data2, dict):
         return 'nested'
     elif data1 == data2:
@@ -26,7 +26,7 @@ def get_meta(data1: Any, data2: Any, key) -> str:
         return 'changed'
 
 
-def get_metachanges(data1: Any, data2: Any, key):
+def get_meta_changes(data1: Any, data2: Any, key):
     if key not in data1:
         return 'added'
     elif key not in data2:
@@ -35,36 +35,42 @@ def get_metachanges(data1: Any, data2: Any, key):
         return 'updated'
 
 
-def get_diff(data1: Dict[str, Any], data2: Dict[str, Any]) -> Dict[str, tuple]:
+def get_diff(data1: Dict[str, Any],
+             data2: Dict[str, Any]) -> Dict[str, Tuple[str, Any]]:
+
     diff = {}
     for key in sorted(set(data1) | set(data2)):
         val1, val2 = data1.get(key), data2.get(key)
-        if get_meta(val1, val2, key) == 'nested':
+        if get_meta(val1, val2) == 'nested':
             nested_diff = get_diff(val1, val2)
             if nested_diff:
                 diff[key] = 'nested', nested_diff
-        elif get_meta(val1, val2, key) == 'original':
+        elif get_meta(val1, val2) == 'original':
             diff[key] = 'original', val1
-        elif get_meta(val1, val2, key) == 'changed':
-            diff[key] = get_metachanges(data1, data2, key), (val1, val2)
+        elif get_meta(val1, val2) == 'changed':
+            diff[key] = get_meta_changes(data1, data2, key), (val1, val2)
+
     return diff
 
 
-def format_diff(style: str, diff: Dict[str, Any],
+def format_diff(style: str, diff: Dict[str, Tuple[str, Any]],
                 path: str = '') -> Dict[str, Any] or str:
-    variable = {}
+
+    formatter_dict = {}
     for key, (meta, value) in diff.items():
         if meta == 'nested':
             nested_diff = format_diff(style, value, path + key + '.')
             if nested_diff:
-                variable[key] = nested_diff
+                formatter_dict[key] = nested_diff
         else:
-            FORMATTERS[style](diff, variable, path)
-    return variable
+            FORMATTERS[style](diff, formatter_dict, path)
+
+    return formatter_dict
 
 
 def generate_diff(path_file1: Path, path_file2: Path,
                   style: str = 'stylish') -> str:
+
     if style not in DIFF_STYLE and style not in FORMATTERS:
         raise ValueError(f'Invalid format: {style}')
     data1 = get_data(path_file1)
