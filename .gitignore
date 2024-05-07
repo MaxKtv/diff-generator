@@ -22,3 +22,4 @@ dist/
 /file2.json
 /file1.json
 /.coverage
+/coverage.xml
