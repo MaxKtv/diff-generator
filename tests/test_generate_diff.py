@@ -12,7 +12,7 @@ def get_path(file_name):
 def test_generate_stylish_diff():
     file1_j, file1_y = get_path('file1.json'), get_path('file1.yml')
     file2_j, file2_y = get_path('file2.json'), get_path('file2.yaml')
-    expected = get_path('expected.txt')
+    expected = get_path('expected_stylish.txt')
     with open(expected, 'r') as e:
         assert generate_diff.generate_diff(file1_j, file2_j) == e.read()
     with open(expected, 'r') as e:
