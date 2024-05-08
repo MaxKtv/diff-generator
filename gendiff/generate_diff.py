@@ -18,6 +18,16 @@ DIFF_STYLE = {
 
 
 def get_meta(data1: Any, data2: Any) -> str:
+    """"
+    Compares value of data1 and data2
+
+    Args:
+        data1 (Any): Value of data1
+        data2 (Any): Value of data2
+
+    Returns:
+        str: meta of data1 in reference of data2
+    """
     if isinstance(data1, dict) and isinstance(data2, dict):
         return 'nested'
     elif data1 == data2:
@@ -27,6 +37,18 @@ def get_meta(data1: Any, data2: Any) -> str:
 
 
 def get_meta_changes(data1: Any, data2: Any, key):
+    """
+    Gives exactly information about changes in data1 and data2
+
+    Args:
+        data1 (Any): changed Value of data1
+        data2 (Any): changed Value of data2
+        key (str): key from union-keys of data1 and data2
+            which was changed or which value was changed
+
+    Returns:
+        str: meta of data1 in reference of data2
+    """
     if key not in data1:
         return 'added'
     elif key not in data2:
@@ -37,7 +59,19 @@ def get_meta_changes(data1: Any, data2: Any, key):
 
 def get_diff(data1: Dict[str, Any],
              data2: Dict[str, Any]) -> Dict[str, Tuple[str, Any]]:
+    """
+    Builds the new "diff" dictionary
+    which contains all keys-values
+    (from data1 and data2) and meta
+    of data1 in reference of data2
 
+    Args:
+        data1 (Dict[str, Any]): Parsed data from file1
+        data2 (Dict[str, Any]): Parsed data from file2
+
+    Returns
+        Dict[str, Tuple[str, Any]]: Dictionary of difference data1 and data2
+    """
     diff = {}
     for key in sorted(set(data1) | set(data2)):
         val1, val2 = data1.get(key), data2.get(key)
@@ -55,7 +89,22 @@ def get_diff(data1: Dict[str, Any],
 
 def format_diff(style: str, diff: Dict[str, Tuple[str, Any]],
                 path: str = '') -> Dict[str, Any] or str:
+    """
+    Builds the dictionary for one of formatters
+    in accordance with style
 
+    Args:
+        style (str): style of difference-information.
+                    Defines which formatter should be used.
+                    Set by user. By default, style is stylish
+        diff (Dict[str, Tuple[str, Any]]): Dictionary of difference
+                                          data of file1 and file2
+        path (str, optional): path to file presented in way of enum of keys
+
+    Returns:
+        Dict[str, Any]: Difference data of file1 and file2 in set style.
+                        Presented in Dictionary
+    """
     formatter_dict = {}
     for key, (meta, value) in diff.items():
         if meta == 'nested':
@@ -70,7 +119,12 @@ def format_diff(style: str, diff: Dict[str, Tuple[str, Any]],
 
 def generate_diff(path_file1: Path, path_file2: Path,
                   style: str = 'stylish') -> str:
-
+    """
+    DIFF_STYLE[style]() определяет какой форматтер должен быть использован.
+    Применяет функцию соответствующего форматтера, которая обрабатывает данные
+    из словаря formatted_diff т.е. конвертирует различия представленные ввиде словаря
+    в строку в заданном стиле.
+    """
     if style not in DIFF_STYLE and style not in FORMATTERS:
         raise ValueError(f'Invalid format: {style}')
     data1 = get_data(path_file1)
