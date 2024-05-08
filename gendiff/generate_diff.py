@@ -122,8 +122,8 @@ def generate_diff(path_file1: Path, path_file2: Path,
     """
     DIFF_STYLE[style]() определяет какой форматтер должен быть использован.
     Применяет функцию соответствующего форматтера, которая обрабатывает данные
-    из словаря formatted_diff т.е. конвертирует различия представленные ввиде словаря
-    в строку в заданном стиле.
+    из словаря formatted_diff т.е. конвертирует различия представленные
+    в виде словаря в строку в заданном стиле.
     """
     if style not in DIFF_STYLE and style not in FORMATTERS:
         raise ValueError(f'Invalid format: {style}')
