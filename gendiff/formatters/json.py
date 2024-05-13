@@ -3,23 +3,23 @@ from json import dumps
 from gendiff.formatters.plain import format_value
 
 
-def make_json_diff(diff: Dict[str, Tuple[str, Any]],
-                   formatter_dict: Dict[str, Any], _) -> Dict[str, Any]:
-
+def make_json_diff(diff: Dict[str, Tuple[str, Any]]) -> Dict[str, Any]:
+    formatter_dict = {}
     for key, (meta, value) in diff.items():
-        if meta == 'original':
-            formatter_dict[key] = f'{format_value(value)}: {meta}'
+        if meta == 'nested':
+            nested = make_json_diff(value)
+            formatter_dict[key] = nested
+        elif meta == 'updated':
+            data1_value = value[0]
+            data2_value = value[1]
+            formatter_dict[key] = (f'{format_value(data1_value)}: '
+                                   f'{meta} -> {format_value(data2_value)}')
         else:
-            if meta == 'added':
-                formatter_dict[key] = f'{format_value(value[1])}: {meta}'
-            elif meta == 'removed':
-                formatter_dict[key] = f'{format_value(value[0])}: {meta}'
-            elif meta == 'updated':
-                formatter_dict[key] = (f'{format_value(value[0])}: '
-                                       f'{meta} -> {format_value(value[1])}')
-
+            formatter_dict[key] = f'{format_value(value)}: {meta}'
     return formatter_dict
 
 
-def get_json_diff(formatter_dict: Dict[str, Any]) -> str:
-    return dumps(formatter_dict, indent=4)
+def get_json_diff(diff: Dict[str, Tuple[str, Any]]) -> str:
+    formatter_dict: Dict[str, Any] = make_json_diff(diff)
+    json_diff = dumps(formatter_dict, indent=4)
+    return json_diff

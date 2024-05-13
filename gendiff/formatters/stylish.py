@@ -1,19 +1,27 @@
 from typing import Dict, Any, Tuple
 
+STYLISH_META = {
+    'added': '+ ',
+    'original': '  ',
+    'removed': '- ',
+    'updated': ('- ', '+ ')
+}
 
-def make_stylish_diff(diff: Dict[str, Tuple[str, Any]],
-                      formatter_dict: Dict[str, Any], _) -> Dict[str, Any]:
 
+def format_stylish_diff(diff: Dict[str, Tuple[str, Any]]) -> Dict[str, Any]:
+    formatter_dict = {}
     for key, [meta, value] in diff.items():
-        if meta == 'original':
-            formatter_dict[f'  {key}'] = value
-        elif meta == 'removed':
-            formatter_dict[f'- {key}'] = value[0]
-        elif meta == 'added':
-            formatter_dict[f'+ {key}'] = value[1]
+        if meta == 'nested':
+            nested = format_stylish_diff(value)
+            if nested:
+                formatter_dict[key] = nested
         elif meta == 'updated':
-            formatter_dict[f'- {key}'] = value[0]
-            formatter_dict[f'+ {key}'] = value[1]
+            data1_value, stylish_meta1 = value[0], STYLISH_META[meta][0]
+            data2_value, stylish_meta2 = value[1], STYLISH_META[meta][1]
+            formatter_dict[f'{stylish_meta1}{key}'] = data1_value
+            formatter_dict[f'{stylish_meta2}{key}'] = data2_value
+        else:
+            formatter_dict[f'{STYLISH_META[meta]}{key}'] = value
 
     return formatter_dict
 
@@ -27,8 +35,8 @@ def decoder(obj: Any) -> str:
         return obj
 
 
-def get_stylish_diff(formatter_dict: Dict[str, Any],
-                     replacer: str = ' ', spaces_count: int = 2) -> str:
+def stringify_stylish_diff(formatter_dict: Dict[str, Any],
+                           replacer: str = ' ', spaces_count: int = 2) -> str:
 
     def stringify_value(value: Any, indent: str) -> str:
         if not isinstance(value, dict):
@@ -51,3 +59,9 @@ def get_stylish_diff(formatter_dict: Dict[str, Any],
                         + indent[:-spaces_count * len(replacer)] + '}')
 
     return stringify_value(formatter_dict, replacer * spaces_count)
+
+
+def get_stylish_diff(diff: Dict[str, Tuple[str, Any]]) -> str:
+    formatter_dict = format_stylish_diff(diff)
+    stylish_diff = stringify_stylish_diff(formatter_dict)
+    return stylish_diff
