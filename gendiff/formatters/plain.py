@@ -1,12 +1,12 @@
 from typing import Dict, Any, Tuple
 
 
-def make_plain_diff(diff: Dict[str, Tuple[str, Any]],
-                    path='') -> Dict[str, Any]:
+def format_plain_diff(diff: Dict[str, Tuple[str, Any]],
+                      path: str = '') -> Dict[str, Any]:
     formatter_dict = {}
     for key, (meta, value) in diff.items():
         if meta == 'nested':
-            nested = make_plain_diff(value, f'{path}{key}.')
+            nested = format_plain_diff(value, f'{path}{key}.')
             formatter_dict[key] = nested
         elif meta == 'added':
             formatter_dict[key] = (f"Property '{path}{key}' "
@@ -49,6 +49,6 @@ def stringify_plain_diff(formatted_diff: Dict[str, Any]) -> str:
 
 
 def get_plain_diff(diff: Dict[str, Tuple[str, Any]]) -> str:
-    formatter_diff = make_plain_diff(diff)
+    formatter_diff = format_plain_diff(diff)
     plain_diff = stringify_plain_diff(formatter_diff)
     return plain_diff
