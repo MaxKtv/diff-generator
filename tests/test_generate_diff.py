@@ -1,6 +1,6 @@
 import pytest
 from pathlib import Path
-from gendiff import generate_diff
+from gendiff import diff_generator
 
 
 def get_path(file_name):
@@ -14,9 +14,9 @@ def test_generate_stylish_diff():
     file2_j, file2_y = get_path('file2.json'), get_path('file2.yaml')
     expected = get_path('expected_stylish.txt')
     with open(expected, 'r') as e:
-        assert generate_diff.generate_diff(file1_j, file2_j) == e.read()
+        assert diff_generator.generate_diff(file1_j, file2_j) == e.read()
     with open(expected, 'r') as e:
-        assert generate_diff.generate_diff(file1_y, file2_y) == e.read()
+        assert diff_generator.generate_diff(file1_y, file2_y) == e.read()
 
 
 def test_generate_plain_diff():
@@ -24,9 +24,9 @@ def test_generate_plain_diff():
     file2_j, file2_y = get_path('file2.json'), get_path('file2.yaml')
     expected = get_path('expected_plain.txt')
     with open(expected, 'r') as e:
-        assert generate_diff.generate_diff(file1_j, file2_j, 'plain') == e.read()
+        assert diff_generator.generate_diff(file1_j, file2_j, 'plain') == e.read()
     with open(expected, 'r') as e:
-        assert generate_diff.generate_diff(file1_y, file2_y, 'plain') == e.read()
+        assert diff_generator.generate_diff(file1_y, file2_y, 'plain') == e.read()
 
 
 def test_generate_json_diff():
@@ -34,6 +34,6 @@ def test_generate_json_diff():
     file2_j, file2_y = get_path('file2.json'), get_path('file2.yaml')
     expected = get_path('expected_json.json')
     with open(expected, 'r') as e:
-        assert generate_diff.generate_diff(file1_j, file2_j, 'json') == e.read()
+        assert diff_generator.generate_diff(file1_j, file2_j, 'json') == e.read()
     with open(expected, 'r') as e:
-        assert generate_diff.generate_diff(file1_y, file2_y, 'json') == e.read()
+        assert diff_generator.generate_diff(file1_y, file2_y, 'json') == e.read()
