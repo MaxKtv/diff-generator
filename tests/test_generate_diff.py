@@ -1,6 +1,6 @@
 import pytest
 from pathlib import Path
-from gendiff import diff_generator
+from gendiff.diff_generator import generate_diff
 
 
 def get_path(file_name):
@@ -9,31 +9,21 @@ def get_path(file_name):
     return current_dir / 'fixtures' / file_name
 
 
-def test_generate_stylish_diff():
-    file1_j, file1_y = get_path('file1.json'), get_path('file1.yml')
-    file2_j, file2_y = get_path('file2.json'), get_path('file2.yaml')
-    expected = get_path('expected_stylish.txt')
-    with open(expected, 'r') as e:
-        assert diff_generator.generate_diff(file1_j, file2_j) == e.read()
-    with open(expected, 'r') as e:
-        assert diff_generator.generate_diff(file1_y, file2_y) == e.read()
-
-
-def test_generate_plain_diff():
-    file1_j, file1_y = get_path('file1.json'), get_path('file1.yml')
-    file2_j, file2_y = get_path('file2.json'), get_path('file2.yaml')
-    expected = get_path('expected_plain.txt')
-    with open(expected, 'r') as e:
-        assert diff_generator.generate_diff(file1_j, file2_j, 'plain') == e.read()
-    with open(expected, 'r') as e:
-        assert diff_generator.generate_diff(file1_y, file2_y, 'plain') == e.read()
-
-
-def test_generate_json_diff():
-    file1_j, file1_y = get_path('file1.json'), get_path('file1.yml')
-    file2_j, file2_y = get_path('file2.json'), get_path('file2.yaml')
-    expected = get_path('expected_json.json')
-    with open(expected, 'r') as e:
-        assert diff_generator.generate_diff(file1_j, file2_j, 'json') == e.read()
-    with open(expected, 'r') as e:
-        assert diff_generator.generate_diff(file1_y, file2_y, 'json') == e.read()
+@pytest.mark.parametrize(
+    'fixtures_n_style',
+    [
+        pytest.param(('stylish', 'file1.json', 'file2.json', 'expected_stylish.txt'),
+                     id='Generate stylish-style diff'),
+        pytest.param(('plain', 'file1.json', 'file2.yaml', 'expected_plain.txt'),
+                     id='Generate plain-style diff'),
+        pytest.param(('json', 'file1.yml', 'file2.json', 'expected_json.json'),
+                     id='Generate json-style diff')
+    ]
+)
+def test_generate_diff(fixtures_n_style):
+    style, file1, file2, expected_result = fixtures_n_style
+    path_file1 = get_path(file1)
+    path_file2 = get_path(file2)
+    expected = get_path(expected_result)
+    with open(expected, 'r') as opened_expected:
+        assert generate_diff(path_file1, path_file2, style) == opened_expected.read()
