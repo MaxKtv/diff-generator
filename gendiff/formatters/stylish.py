@@ -93,7 +93,7 @@ def stringify_stylish_diff(formatter_dict: Dict[str, Any],
                 lines.append(
                     f'{indent}'
                     f'{key if not key[0].isalpha() else f"  {key}"}:'
-                    f'{" " if len(str(format_value)) >= len(replacer) else ""}'
+                    f'{" "}'
                     f'{format_value}'
                 )
             if lines:
