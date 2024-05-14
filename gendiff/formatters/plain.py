@@ -9,6 +9,7 @@ def format_plain_diff(diff: Dict[str, Tuple[str, Any]],
      Args:
          diff (Dict[str, Tuple[str, Any]]): Dictionary of difference
                                             data1 and data2
+        path (str, optional): Path to value based on keys. Defaults to ''.
 
      Returns:
          Dict[str, Any]: Dictionary of difference data1 and data2
