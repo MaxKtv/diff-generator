@@ -10,19 +10,22 @@ DIFF_STYLE = {
 }
 
 
-def get_extension(file: Path) -> str:
+def get_extension(file: str | Path) -> str:
     """
-     Gets file extension
+     Gets file extension without a dot
 
      Args:
-         file (Path): path to file
+         file (str | Path): path to file
 
      Returns
          str: Extension of file without a dot
      """
-    file_extension = file.suffix
-    undot_file_extension = file_extension[1:]
-    return undot_file_extension
+    if isinstance(file, str):
+        undot_extension = file.split('.')[-1]
+    elif isinstance(file, Path):
+        extension = file.suffix
+        undot_extension = extension[1:]
+    return undot_extension
 
 
 def get_diff(data1: Dict[str, Any],
@@ -82,5 +85,4 @@ def generate_diff(path_file1: Path, path_file2: Path,
     data1 = get_data(path_file1, file_ext1)
     data2 = get_data(path_file2, file_ext2)
     diff = get_diff(data1, data2)
-
     return DIFF_STYLE[style](diff)
