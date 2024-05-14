@@ -4,6 +4,16 @@ from gendiff.formatters.plain import format_value
 
 
 def format_json_diff(diff: Dict[str, Tuple[str, Any]]) -> Dict[str, Any]:
+    """
+     Formats diff dictionary to "json" style dictionary
+
+     Args:
+         diff (Dict[str, Tuple[str, Any]]): Dictionary of difference
+                                            data1 and data2
+
+     Returns:
+         Dict[str, Any]: Dictionary of difference "json" style
+     """
     formatter_dict = {}
     for key, (meta, value) in diff.items():
         if meta == 'nested':
@@ -20,6 +30,16 @@ def format_json_diff(diff: Dict[str, Tuple[str, Any]]) -> Dict[str, Any]:
 
 
 def get_json_diff(diff: Dict[str, Tuple[str, Any]]) -> str:
+    """
+    Formats diff dictionary to "json" style
+
+    Args:
+         diff (Dict[str, Tuple[str, Any]]): Dictionary of difference
+                                            data1 and data2
+
+    Returns:
+        str: "json" styled difference
+    """
     formatter_dict: Dict[str, Any] = format_json_diff(diff)
     json_diff = dumps(formatter_dict, indent=4)
     return json_diff

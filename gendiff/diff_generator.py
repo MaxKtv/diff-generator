@@ -10,8 +10,16 @@ DIFF_STYLE = {
 }
 
 
-def get_file_extension(file: Path) -> str:
-    file = Path(file)
+def get_extension(file: Path) -> str:
+    """
+     Gets file extension
+
+     Args:
+         file (Path): path to file
+
+     Returns
+         str: Extension of file without a dot
+     """
     file_extension = file.suffix
     undot_file_extension = file_extension[1:]
     return undot_file_extension
@@ -53,11 +61,24 @@ def get_diff(data1: Dict[str, Any],
 
 def generate_diff(path_file1: Path, path_file2: Path,
                   style: str = 'stylish') -> str:
+    """
+    The engine of utility program
+    Generates the diff in accordance with style
 
+    Args:
+        path_file1 (Path): path to file1
+        path_file2 (Path): path to file2
+        style (str): style of difference-information.
+                    Defines which formatter should be used.
+                    Set by user. By default, style is stylish
+
+    Returns
+        str: Styled difference of file1 and file2
+    """
     if style not in DIFF_STYLE:
         raise ValueError(f'Invalid format: {style}')
-    file_ext1 = get_file_extension(path_file1)
-    file_ext2 = get_file_extension(path_file2)
+    file_ext1 = get_extension(path_file1)
+    file_ext2 = get_extension(path_file2)
     data1 = get_data(path_file1, file_ext1)
     data2 = get_data(path_file2, file_ext2)
     diff = get_diff(data1, data2)
