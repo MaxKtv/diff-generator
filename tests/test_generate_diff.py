@@ -3,7 +3,7 @@ from pathlib import Path
 from gendiff.diff_generator import generate_diff
 
 
-def get_path(file_name):
+def get_path(file_name: str) -> Path:
     p = Path(__file__)
     current_dir = p.absolute().parent
     return current_dir / 'fixtures' / file_name
@@ -24,6 +24,6 @@ def test_generate_diff(fixtures_n_style):
     style, file1, file2, expected_result = fixtures_n_style
     path_file1 = get_path(file1)
     path_file2 = get_path(file2)
-    expected = get_path(expected_result)
-    with open(expected, 'r') as opened_expected:
-        assert generate_diff(path_file1, path_file2, style) == opened_expected.read()
+    path_expected = get_path(expected_result)
+    expected = path_expected.read_text()
+    assert generate_diff(path_file1, path_file2, style) == expected
