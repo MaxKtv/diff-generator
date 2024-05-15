@@ -1,4 +1,4 @@
-from gendiff.parser import get_data
+from gendiff.parser import parse_data
 from gendiff.formatters import stylish, plain, json
 from pathlib import Path
 from typing import Dict, Any, Tuple
@@ -8,6 +8,20 @@ DIFF_STYLE = {
     'plain': plain.get_plain_diff,
     'json': json.get_json_diff
 }
+
+
+def read_file(file):
+    """
+     Opens and reads a file
+
+     Args:
+         file: Path to the file
+
+     Returns
+         Contents of the file
+     """
+    with open(file, 'r') as f:
+        return f.read()
 
 
 def get_extension(file: str | Path) -> str:
@@ -21,11 +35,10 @@ def get_extension(file: str | Path) -> str:
          str: Extension of file without a dot
      """
     if isinstance(file, str):
-        undot_extension = file.split('.')[-1]
+        return file.split('.')[-1]
     elif isinstance(file, Path):
         extension = file.suffix
-        undot_extension = extension[1:]
-    return undot_extension
+        return extension[1:]
 
 
 def get_diff(data1: Dict[str, Any],
@@ -82,7 +95,9 @@ def generate_diff(path_file1: Path, path_file2: Path,
         raise ValueError(f'Invalid format: {style}')
     file_ext1 = get_extension(path_file1)
     file_ext2 = get_extension(path_file2)
-    data1 = get_data(path_file1, file_ext1)
-    data2 = get_data(path_file2, file_ext2)
-    diff = get_diff(data1, data2)
+    data1 = read_file(path_file1)
+    data2 = read_file(path_file2)
+    parsed_data1 = parse_data(data1, file_ext1)
+    parsed_data2 = parse_data(data2, file_ext2)
+    diff = get_diff(parsed_data1, parsed_data2)
     return DIFF_STYLE[style](diff)
