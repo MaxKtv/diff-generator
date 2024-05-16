@@ -2,9 +2,9 @@ from typing import Dict, Any, Tuple
 
 
 def format_plain_diff(diff: Dict[str, Tuple[str, Any]],
-                      path: str = '') -> Dict[str, Any]:
+                      path: str = '') -> list:
     """
-     Formats diff dictionary to "plain" style dictionary
+     Formats diff dictionary to "plain" style list
 
      Args:
          diff (Dict[str, Tuple[str, Any]]): Dictionary of difference
@@ -12,30 +12,29 @@ def format_plain_diff(diff: Dict[str, Tuple[str, Any]],
         path (str, optional): Path to value based on keys. Defaults to ''.
 
      Returns:
-         Dict[str, Any]: Dictionary of difference data1 and data2
+         Dict[str, Any]: List of difference data1 and data2
                          in "plain" style
      """
-    formatter_dict = {}
+    formatter_list = []
     for key, (meta, value) in diff.items():
         if meta == 'nested':
             nested = format_plain_diff(value, f'{path}{key}.')
-            formatter_dict[key] = nested
+            formatter_list.extend(nested)
         elif meta == 'added':
-            formatter_dict[key] = (f"Property '{path}{key}' "
-                                   f"was added with value: "
-                                   f"{format_value(value)}")
+            formatter_list.append(f"Property '{path}{key}' "
+                                  f"was added with value: "
+                                  f"{format_value(value)}")
         elif meta == 'removed':
-            formatter_dict[key] = (f"Property '{path}{key}' "
-                                   f"was removed")
+            formatter_list.append(f"Property '{path}{key}' "
+                                  f"was removed")
         elif meta == 'updated':
             data1_value = value[0]
             data2_value = value[1]
-            formatter_dict[key] = (f"Property '{path}{key}' "
-                                   f"was updated. From "
-                                   f"{format_value(data1_value)} "
-                                   f"to {format_value(data2_value)}")
-
-    return formatter_dict
+            formatter_list.append(f"Property '{path}{key}' "
+                                  f"was updated. From "
+                                  f"{format_value(data1_value)} "
+                                  f"to {format_value(data2_value)}")
+    return formatter_list
 
 
 def format_value(value: Any) -> str:
@@ -57,35 +56,6 @@ def format_value(value: Any) -> str:
     return f"'{value}'" if isinstance(value, str) else str(value)
 
 
-def stringify_plain_diff(formatted_diff: Dict[str, Any]) -> str:
-    """
-    Turns "plain" styled diff dictionary into string
-
-    Args:
-       formatted_diff (Dict[str, Any]): Formatted diff dictionary
-
-    Returns:
-        str: "plain" styled difference
-    """
-    def extract_values(dictionary: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Extracts values from formatted diff dictionary
-
-        Args:
-          dictionary (Dict[str, Any]): Dictionary to extract values
-
-        Yields:
-            str: Extracted value
-        """
-        for value in dictionary.values():
-            if isinstance(value, dict):
-                yield from extract_values(value)
-            else:
-                yield value
-
-    return '\n'.join(str(value) for value in extract_values(formatted_diff))
-
-
 def get_plain_diff(diff: Dict[str, Tuple[str, Any]]) -> str:
     """
      Formats diff dictionary to "plain" style
@@ -98,5 +68,5 @@ def get_plain_diff(diff: Dict[str, Tuple[str, Any]]) -> str:
          str: "plain" styled difference
      """
     formatter_diff = format_plain_diff(diff)
-    plain_diff = stringify_plain_diff(formatter_diff)
+    plain_diff = '\n'.join(formatter_diff)
     return plain_diff
