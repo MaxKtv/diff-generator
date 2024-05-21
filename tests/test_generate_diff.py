@@ -27,3 +27,19 @@ def test_generate_diff(fixtures_n_style):
     path_expected = get_path(expected_result)
     expected = path_expected.read_text()
     assert generate_diff(path_file1, path_file2, style) == expected
+
+
+@pytest.mark.parametrize(
+    'wrong_fixtures_n_style',
+    [
+        pytest.param(('ex', 'file1.json', 'file2.json'),
+                     id='Exception: style'),
+        pytest.param(('plain', 'file1.txt', 'file2.exe'),
+                     id='Exception: extension')
+    ]
+)
+def test_exceptions(wrong_fixtures_n_style):
+    style, file1, file2 = wrong_fixtures_n_style
+    with pytest.raises(Exception) as excinfo:
+        generate_diff(style, file1, file2)
+    assert 'Oh no, something went wrong' in str(excinfo.value)
