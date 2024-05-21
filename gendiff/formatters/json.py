@@ -1,6 +1,6 @@
 from typing import Dict, Any, Tuple
 from json import dumps
-from gendiff.formatters.plain import format_value
+from gendiff.formatters.plain import normalize_plain_value
 
 
 def format_json_diff(diff: Dict[str, Tuple[str, Any]]) -> Dict[str, Any]:
@@ -22,10 +22,11 @@ def format_json_diff(diff: Dict[str, Tuple[str, Any]]) -> Dict[str, Any]:
         elif meta == 'updated':
             data1_value = value[0]
             data2_value = value[1]
-            formatter_dict[key] = (f'{format_value(data1_value)}: '
-                                   f'{meta} -> {format_value(data2_value)}')
+            formatter_dict[key] = (f'{normalize_plain_value(data1_value)}: '
+                                   f'{meta} -> '
+                                   f'{normalize_plain_value(data2_value)}')
         else:
-            formatter_dict[key] = f'{format_value(value)}: {meta}'
+            formatter_dict[key] = f'{normalize_plain_value(value)}: {meta}'
     return formatter_dict
 
 
