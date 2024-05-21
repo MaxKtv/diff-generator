@@ -16,6 +16,6 @@ def parse_data(data, ext: str) -> Dict[str, Any]:
         return data
     else:
         extensions = ', '.join(EXTENSIONS.keys())
-        raise ValueError(f'Oh no, something went wrong'
-                         f'\nSupported extensions are:'
-                         f'\n>>> {extensions}')
+        raise Exception(f'Oh no, something went wrong'
+                        f'\nSupported extensions are:'
+                        f'\n>>> {extensions}')
