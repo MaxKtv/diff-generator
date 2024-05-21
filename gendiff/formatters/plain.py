@@ -23,7 +23,7 @@ def format_plain_diff(diff: Dict[str, Tuple[str, Any]],
         elif meta == 'added':
             formatter_list.append(f"Property '{path}{key}' "
                                   f"was added with value: "
-                                  f"{format_value(value)}")
+                                  f"{normalize_plain_value(value)}")
         elif meta == 'removed':
             formatter_list.append(f"Property '{path}{key}' "
                                   f"was removed")
@@ -32,12 +32,12 @@ def format_plain_diff(diff: Dict[str, Tuple[str, Any]],
             data2_value = value[1]
             formatter_list.append(f"Property '{path}{key}' "
                                   f"was updated. From "
-                                  f"{format_value(data1_value)} "
-                                  f"to {format_value(data2_value)}")
+                                  f"{normalize_plain_value(data1_value)} "
+                                  f"to {normalize_plain_value(data2_value)}")
     return formatter_list
 
 
-def format_value(value: Any) -> str:
+def normalize_plain_value(value: Any) -> str:
     """
     Formats value of diff to "plain" style value
 
@@ -49,7 +49,7 @@ def format_value(value: Any) -> str:
     """
     if isinstance(value, dict):
         return '[complex value]'
-    if value is None:
+    elif value is None:
         return 'null'
     elif isinstance(value, bool):
         return str(value).lower()
