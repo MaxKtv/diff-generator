@@ -70,8 +70,10 @@ def get_diff(data1: Dict[str, Any],
             diff[key] = ('added', val2)
         elif key not in data2:
             diff[key] = ('removed', val1)
-        else:
+        elif val1 != val2:
             diff[key] = ('updated', (val1, val2))
+        else:
+            continue
     return diff
 
 
@@ -92,7 +94,10 @@ def generate_diff(path_file1: Path, path_file2: Path,
         str: Styled difference of file1 and file2
     """
     if style not in DIFF_STYLE:
-        raise ValueError(f'Invalid format: {style}')
+        raise Exception(f'Oh no, something went wrong'
+                        f'Unsupported format: {style}\n'
+                        f'supported formats are -> '
+                        f'{", ".join(list(DIFF_STYLE))}\n')
     file_ext1 = get_extension(path_file1)
     file_ext2 = get_extension(path_file2)
     data1 = read_file(path_file1)
