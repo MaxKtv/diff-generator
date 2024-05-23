@@ -17,5 +17,6 @@ def parse_data(data, ext: str) -> Dict[str, Any]:
     else:
         extensions = ', '.join(EXTENSIONS.keys())
         raise KeyError(f'Oh no, something went wrong'
-                        f'\nSupported extensions are:'
-                        f'\n>>> {extensions}')
+                       f'Unsupported extension: {ext}'
+                       f'\nSupported extensions are:'
+                       f'\n>>> {extensions}')
