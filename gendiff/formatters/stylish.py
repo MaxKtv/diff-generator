@@ -40,17 +40,25 @@ def stringify_value(node: Any, depth: int = 0) -> str:
             meta, val = value
             if meta == 'nested':
                 formatted_value = stringify_value(val, depth + 1)
-                lines.append(f"{base_indent}{STYLISH_META[meta]}{key}: {formatted_value}")
+                lines.append(f"{base_indent}{STYLISH_META[meta]}{key}: "
+                             f"{formatted_value}")
             elif meta == 'updated':
                 old_val, new_val = val
-                lines.append(f"{base_indent}{STYLISH_META['removed']}{key}: {normalize_value(old_val, depth)}")
-                lines.append(f"{base_indent}{STYLISH_META['added']}{key}: {normalize_value(new_val, depth)}")
+                old_meta = STYLISH_META[meta][0]
+                new_meta = STYLISH_META[meta][1]
+                lines.append(f"{base_indent}{old_meta}{key}: "
+                             f"{normalize_value(old_val, depth)}")
+                lines.append(f"{base_indent}{new_meta}{key}: "
+                             f"{normalize_value(new_val, depth)}")
             else:
                 formatted_value = normalize_value(val, depth)
-                lines.append(f"{base_indent}{STYLISH_META[meta]}{key}: {formatted_value}")
-        #Добавляем отступы для {complex value} значение. которых было полностью изменено
+                lines.append(f"{base_indent}{STYLISH_META[meta]}{key}: "
+                             f"{formatted_value}")
+        # Добавляем отступы для {complex value} значение.
+        # которых было полностью изменено
         else:
-            lines.append(f"{base_indent}{STYLISH_META['original']}{key}: {normalize_value(value, depth)}")
+            lines.append(f"{base_indent}{STYLISH_META['original']}{key}: "
+                         f"{normalize_value(value, depth)}")
     result = chain(
         '{', lines, [
             (indent + '}') if len(indent) < 1 else (indent + '  ' + '}')
