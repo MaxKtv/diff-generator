@@ -11,7 +11,12 @@ STYLISH_META = {
     'updated': ('- ', '+ '),
     'nested': '  '
 }
-INBORN_INDENT = len(STYLISH_META[next(iter(STYLISH_META))])
+
+
+def get_inborn_indent_count():
+    any_stylish_meta = next(iter(STYLISH_META))
+    inborn_indent_count = len(STYLISH_META[any_stylish_meta])
+    return inborn_indent_count
 
 
 def stringify_value(node: Any, depth: int = 0) -> str:
@@ -33,20 +38,19 @@ def stringify_value(node: Any, depth: int = 0) -> str:
     for key, value in sorted(node.items()):
         if isinstance(value, tuple):
             meta, val = value
-            if meta == 'updated':
+            if meta == 'nested':
+                formatted_value = stringify_value(val, depth + 1)
+                lines.append(f"{base_indent}{STYLISH_META[meta]}{key}: {formatted_value}")
+            elif meta == 'updated':
                 old_val, new_val = val
-                lines.append(f"{base_indent}{STYLISH_META['removed']}{key}: "
-                             f"{normalize_value(old_val, depth + 1)}")
-                lines.append(f"{base_indent}{STYLISH_META['added']}{key}: "
-                             f"{normalize_value(new_val, depth + 1)}")
+                lines.append(f"{base_indent}{STYLISH_META['removed']}{key}: {normalize_value(old_val, depth)}")
+                lines.append(f"{base_indent}{STYLISH_META['added']}{key}: {normalize_value(new_val, depth)}")
             else:
-                formatted_value = stringify_value(val, depth + 1) \
-                    if meta == 'nested' else normalize_value(val, depth + 1)
-                lines.append(f"{base_indent}{STYLISH_META[meta]}{key}: "
-                             f"{formatted_value}")
+                formatted_value = normalize_value(val, depth)
+                lines.append(f"{base_indent}{STYLISH_META[meta]}{key}: {formatted_value}")
+        #Добавляем отступы для {complex value} значение. которых было полностью изменено
         else:
-            lines.append(f"{base_indent}{STYLISH_META['original']}{key}: "
-                         f"{normalize_value(value, depth + 1)}")
+            lines.append(f"{base_indent}{STYLISH_META['original']}{key}: {normalize_value(value, depth)}")
     result = chain(
         '{', lines, [
             (indent + '}') if len(indent) < 1 else (indent + '  ' + '}')
@@ -73,7 +77,7 @@ def normalize_value(obj: Any, depth: int) -> str:
     elif isinstance(obj, (str | int | float)):
         return str(obj)
     elif isinstance(obj, dict):
-        return stringify_value(obj, depth)
+        return stringify_value(obj, depth + 1)
 
 
 def get_indents(depth: int) -> str:
@@ -86,9 +90,10 @@ def get_indents(depth: int) -> str:
     Returns:
         str: indent
     """
+    inborn_indent = get_inborn_indent_count()
     if depth <= 0:
         return ''
-    return REPLACER * (depth * SPACE_COUNT - INBORN_INDENT)
+    return REPLACER * (depth * SPACE_COUNT - inborn_indent)
 
 
 def get_stylish_diff(diff: Dict[str, Tuple[str, Any]]) -> str:
