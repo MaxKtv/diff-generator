@@ -83,7 +83,7 @@ def normalize_value(obj: Any, depth: int) -> str:
         indent = get_indents(depth)
         for key, val in obj.items():
             formatted_value = normalize_value(val, depth + 1)
-            lines.append(f"{get_indents(depth+1)}"
+            lines.append(f"{get_indents(depth + 1)}"
                          f"{REPLACER * get_inborn_indent_count()}{key}: "
                          f"{formatted_value}")
         result = chain(
