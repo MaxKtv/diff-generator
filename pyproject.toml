@@ -4,8 +4,16 @@ version = "0.1.0"
 description = "Compares two configuration files and shows a difference"
 authors = ["MaxKtv <maximkutiaev@outlook.com>"]
 readme = "README.md"
+repository = "https://github.com/MaxKtv/python-project-50.git"
 packages = [
   { include = "gendiff" },
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Framework :: Flake8",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Utilities"
 ]
 
 
