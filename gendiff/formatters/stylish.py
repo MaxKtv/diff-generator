@@ -41,8 +41,7 @@ def format_stylish_diff(node: Any, depth: int = 0) -> str:
                          f"{formatted_value}")
         elif meta == 'updated':
             old_val, new_val = val
-            old_meta = STYLISH_META[meta][0]
-            new_meta = STYLISH_META[meta][1]
+            old_meta, new_meta = STYLISH_META[meta]
             lines.append(f"{base_indent}{old_meta}{key}: "
                          f"{normalize_value(old_val, depth + 1)}")
             lines.append(f"{base_indent}{new_meta}{key}: "
