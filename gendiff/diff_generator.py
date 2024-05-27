@@ -58,7 +58,7 @@ def generate_diff(path_file1: Path, path_file2: Path,
     """
     if style not in DIFF_STYLE:
         raise ValueError(f'Oh no, something went wrong'
-                         f'Unsupported format: {style}\n'
+                         f'Unsupported format: {style} '
                          f'supported formats are -> '
                          f'{", ".join(list(DIFF_STYLE))}\n')
     file_ext1 = get_extension(path_file1)
