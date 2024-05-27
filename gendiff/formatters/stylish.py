@@ -1,5 +1,5 @@
 from itertools import chain
-from typing import Dict, Any, Tuple
+from typing import Dict, Any, Tuple, List
 
 
 REPLACER = ' '
@@ -33,7 +33,6 @@ def format_stylish_diff(node: Any, depth: int = 0) -> str:
     if not isinstance(node, dict):
         return normalize_value(node, depth)
     lines = []
-    indent = get_indents(depth)
     base_indent = get_indents(depth + 1)
     for key, (meta, val) in sorted(node.items()):
         if meta == 'nested':
@@ -53,12 +52,8 @@ def format_stylish_diff(node: Any, depth: int = 0) -> str:
             lines.append(f"{base_indent}{STYLISH_META[meta]}{key}: "
                          f"{formatted_value}")
 
-    result = chain(
-        '{', lines, [
-            (indent + '}') if len(indent) < 1 else (indent + '  ' + '}')
-        ]
-    )
-    return '\n'.join(result)
+    result = stringify_stylish_lines(lines, depth)
+    return result
 
 
 def normalize_value(obj: Any, depth: int) -> str:
@@ -80,18 +75,13 @@ def normalize_value(obj: Any, depth: int) -> str:
         return str(obj)
     elif isinstance(obj, dict):
         lines = []
-        indent = get_indents(depth)
+        inborn_indent = REPLACER * get_inborn_indent_count()
         for key, val in obj.items():
             formatted_value = normalize_value(val, depth + 1)
-            lines.append(f"{get_indents(depth + 1)}"
-                         f"{REPLACER * get_inborn_indent_count()}{key}: "
-                         f"{formatted_value}")
-        result = chain(
-            '{', lines, [
-                (indent + '}') if len(indent) < 1 else (indent + '  ' + '}')
-            ]
-        )
-        return '\n'.join(result)
+            lines.append(f"{get_indents(depth + 1)}{inborn_indent}"
+                         f"{key}: {formatted_value}")
+        result = stringify_stylish_lines(lines, depth)
+        return result
 
 
 def get_indents(depth: int) -> str:
@@ -108,6 +98,23 @@ def get_indents(depth: int) -> str:
     if depth <= 0:
         return ''
     return REPLACER * (depth * SPACE_COUNT - inborn_indent)
+
+
+def stringify_stylish_lines(lines: List[str], depth: int) -> str:
+    """
+    Builds string from lines in stylish style
+
+    Args:
+        lines (List[str]): Object to be converted
+        depth (int): Dictionary's level of depth
+
+    Returns:
+        str: stringified lines in stylish style
+    """
+    indent = get_indents(depth)
+    result = chain('{', lines, [(indent + '}') if len(indent) < 1
+                                else (indent + '  ' + '}')])
+    return '\n'.join(result)
 
 
 def get_stylish_diff(diff: Dict[str, Tuple[str, Any]]) -> str:
