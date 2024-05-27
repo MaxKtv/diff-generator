@@ -1,7 +1,7 @@
 import argparse
 
 
-def argumentize():
+def parse_cli_args():
     """
     Creates a command-line argument parser for comparing files.
 

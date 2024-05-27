@@ -1,17 +1,18 @@
 import sys
-from gendiff.cli import argumentize
+from gendiff.cli import parse_cli_args
 from gendiff.diff_generator import generate_diff
-
-ERRORS = (ValueError, KeyError, FileNotFoundError)
 
 
 def main():
     try:
-        args = argumentize()
+        args = parse_cli_args()
         print(generate_diff(args.first_file, args.second_file, args.format))
         sys.exit(0)
-    except ERRORS as e:
-        print(f"An ERROR occurred: {e}")
+    except (ValueError, KeyError) as err:
+        print(err)
+        sys.exit(1)
+    except Exception as e:
+        print(f'An ERROR occurred:{e}')
         sys.exit(1)
 
 
