@@ -31,12 +31,14 @@ def test_generate_diff(fixtures_n_style):
 
 def test_style_exception():
     style, file1, file2 = 'exception', 'file1.json', 'file2.json'
+    path_file1 = get_path(file1)
+    path_file2 = get_path(file2)
     with pytest.raises(ValueError) as excinfo:
-        generate_diff(file1, file2, style)
+        generate_diff(path_file1, path_file2, style)
     assert 'Unsupported format' in str(excinfo.value)
 
 
-def test_exctension_exception():
+def test_extension_exception():
     file1, file2 = 'file1.yml', 'expected_stylish.txt'
     path_file1 = get_path(file1)
     path_file2 = get_path(file2)
