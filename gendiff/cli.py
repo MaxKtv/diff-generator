@@ -1,10 +1,9 @@
 import argparse
-from typing import Any
 
 
-def create_parser() -> Any:
+def argumentize():
     """
-    Creates a command-line argument parser for comparing configuration files.
+    Creates a command-line argument parser for comparing files.
 
     Returns:
         An argparse.ArgumentParser instance ready
