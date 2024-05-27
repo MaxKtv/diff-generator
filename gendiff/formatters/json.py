@@ -20,11 +20,10 @@ def format_json_diff(diff: Dict[str, Tuple[str, Any]]) -> Dict[str, Any]:
             nested = format_json_diff(value)
             formatter_dict[key] = nested
         elif meta == 'updated':
-            data1_value = value[0]
-            data2_value = value[1]
-            formatter_dict[key] = (f'{normalize_plain_value(data1_value)}: '
+            old_val, new_val = value
+            formatter_dict[key] = (f'{normalize_plain_value(old_val)}: '
                                    f'{meta} -> '
-                                   f'{normalize_plain_value(data2_value)}')
+                                   f'{normalize_plain_value(new_val)}')
         else:
             formatter_dict[key] = f'{normalize_plain_value(value)}: {meta}'
     return formatter_dict
